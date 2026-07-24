@@ -78,28 +78,29 @@ function Index() {
             height={800}
             fetchPriority="high"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/60 to-transparent" />
-          <div className="absolute inset-0 flex items-center">
-            <div className="container-tight">
-              <div className="max-w-2xl">
-                <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-lavender-deep">
-                  Crafted in Lahore
-                </p>
-                <h1 className="font-display text-5xl font-semibold leading-[1.1] text-foreground sm:text-6xl lg:text-7xl">
-                  Premium Women's Clothing
-                </h1>
-                <p className="mt-6 max-w-lg text-lg leading-relaxed text-muted-foreground">
-                  A stitched variety of premium women's clothing, designed with elegance and made for the modern woman.
-                </p>
-                <div className="mt-8 flex flex-wrap gap-4">
-                  <a href="#collections" className="btn-brand">
-                    Explore Collections
-                    <ArrowRight className="h-4 w-4" />
-                  </a>
-                  <a href="#visit" className="btn-outline">
-                    Visit Our Store
-                  </a>
-                </div>
+          <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/40 to-background/80" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="container-tight text-center">
+              <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-lavender-deep">
+                Crafted in Lahore
+              </p>
+              <h1 className="font-display font-semibold leading-[0.95] text-foreground text-6xl sm:text-8xl lg:text-9xl">
+                Beenaz
+              </h1>
+              <p className="mt-4 font-display text-2xl italic text-muted-foreground sm:text-3xl">
+                Fashion House
+              </p>
+              <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+                A stitched variety of premium women's clothing, designed with elegance and made for the modern woman.
+              </p>
+              <div className="mt-8 flex flex-wrap justify-center gap-4">
+                <a href="#collections" className="btn-brand">
+                  Explore Collections
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+                <a href="#visit" className="btn-outline">
+                  Visit Our Store
+                </a>
               </div>
             </div>
           </div>
