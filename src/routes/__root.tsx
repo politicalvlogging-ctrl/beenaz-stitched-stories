@@ -77,14 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Beenaz Fashion House" },
-      { name: "description", content: "Premium stitched women's clothing, crafted in Lahore. Visit Beenaz Fashion House for formal, casual, and party wear collections." },
+      { title: "Beenaz Fashion House — Premium Women's Clothing in Lahore" },
+      { name: "description", content: "Stitched variety of premium women's clothing, crafted in Lahore. Visit us at SQ 99 Mall & Apartments, Bahria Town, or call 0308 6844441." },
       { name: "author", content: "Beenaz Fashion House" },
-      { property: "og:title", content: "Beenaz Fashion House" },
-      { property: "og:description", content: "Premium stitched women's clothing, crafted in Lahore." },
+      { property: "og:title", content: "Beenaz Fashion House — Premium Women's Clothing in Lahore" },
+      { property: "og:description", content: "Stitched variety of premium women's clothing, crafted in Lahore. Visit us at SQ 99 Mall & Apartments, Bahria Town, or call 0308 6844441." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@BeenazFashion" },
+      { name: "twitter:title", content: "Beenaz Fashion House — Premium Women's Clothing in Lahore" },
+      { name: "twitter:description", content: "Stitched variety of premium women's clothing, crafted in Lahore. Visit us at SQ 99 Mall & Apartments, Bahria Town, or call 0308 6844441." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/bb24262a-c5a1-4add-ab69-1b65db072a98/id-preview-7cbab16b--160f4ff4-8424-474e-98af-30825e9d2461.lovable.app-1784881641446.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/bb24262a-c5a1-4add-ab69-1b65db072a98/id-preview-7cbab16b--160f4ff4-8424-474e-98af-30825e9d2461.lovable.app-1784881641446.png" },
     ],
     links: [
       {

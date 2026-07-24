@@ -12,7 +12,7 @@ export const Route = createFileRoute("/")({
       { title: "Beenaz Fashion House — Premium Women's Clothing in Lahore" },
       { name: "description", content: "Stitched variety of premium women's clothing, crafted in Lahore. Visit us at SQ 99 Mall & Apartments, Bahria Town, or call 0308 6844441." },
       { property: "og:title", content: "Beenaz Fashion House — Premium Women's Clothing in Lahore" },
-      { property: "og:description", content: "Stitched variety of premium women's clothing, crafted in Lahore." },
+      { property: "og:description", content: "Stitched variety of premium women's clothing, crafted in Lahore. Visit us at SQ 99 Mall & Apartments, Bahria Town, or call 0308 6844441." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/" },
       { name: "twitter:card", content: "summary_large_image" },
