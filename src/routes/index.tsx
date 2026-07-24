@@ -50,8 +50,9 @@ function Index() {
       {/* Navigation */}
       <header className="fixed inset-x-0 top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
         <div className="container-tight flex h-16 items-center justify-between">
-          <a href="/" className="font-display text-2xl font-semibold tracking-tight text-foreground">
-            Beenaz
+          <a href="/" className="flex items-baseline gap-2">
+            <span className="font-display text-2xl font-semibold tracking-tight text-foreground">Beenaz</span>
+            <span className="hidden text-xs uppercase tracking-widest text-muted-foreground sm:inline">Fashion House</span>
           </a>
           <nav className="hidden items-center gap-8 text-sm font-medium text-muted-foreground sm:flex">
             <a href="#collections" className="hover:text-foreground transition-colors">Collections</a>
