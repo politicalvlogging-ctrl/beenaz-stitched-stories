@@ -163,6 +163,36 @@ function ProductDialog({
     in_stock: initial?.in_stock ?? true,
   });
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (file: File) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/") && !/\.(jpe?g|png|jfif|webp|gif|avif)$/i.test(file.name)) {
+      return toast.error("Please select an image file");
+    }
+    setUploading(true);
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      if (!sess.session) {
+        setUploading(false);
+        return toast.error("Please sign in again to upload");
+      }
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${sess.session.user.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("product-images")
+        .upload(path, file, { upsert: false, contentType: file.type || undefined });
+      if (upErr) throw upErr;
+      const { data } = supabase.storage.from("product-images").getPublicUrl(path);
+      setForm((f) => ({ ...f, image_url: data.publicUrl }));
+      toast.success("Image uploaded");
+    } catch (err: any) {
+      toast.error(err.message || "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -187,7 +217,7 @@ function ProductDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4">
-      <div className="w-full max-w-lg rounded-2xl bg-card p-6 shadow-xl">
+      <div className="w-full max-w-lg rounded-2xl bg-card p-6 shadow-xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between">
           <h2 className="font-display text-2xl font-semibold text-foreground">
             {initial ? "Edit product" : "Add product"}
@@ -216,8 +246,51 @@ function ProductDialog({
               </select>
             </Field>
           </div>
-          <Field label="Image URL">
-            <input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className={inputCls} placeholder="https://…" />
+          <Field label="Product image">
+            <div className="mt-1 space-y-2">
+              {form.image_url && (
+                <div className="relative inline-block">
+                  <img src={form.image_url} alt="preview" className="h-28 w-28 rounded-md object-cover border border-border" />
+                  <button
+                    type="button"
+                    onClick={() => setForm({ ...form, image_url: "" })}
+                    className="absolute -top-2 -right-2 rounded-full bg-background border border-border p-1 shadow"
+                    aria-label="Remove image"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,.jfif"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleFileUpload(f);
+                  e.target.value = "";
+                }}
+              />
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-muted disabled:opacity-50"
+                >
+                  {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                  {uploading ? "Uploading…" : form.image_url ? "Replace image" : "Upload image"}
+                </button>
+                <span className="text-xs text-muted-foreground">JPG, PNG, JFIF, WEBP</span>
+              </div>
+              <input
+                value={form.image_url}
+                onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+                className={inputCls}
+                placeholder="…or paste an image URL"
+              />
+            </div>
           </Field>
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={form.in_stock} onChange={(e) => setForm({ ...form, in_stock: e.target.checked })} />
