@@ -1,0 +1,52 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
+export const Route = createFileRoute("/admin/")({
+  component: DashboardPage,
+});
+
+function DashboardPage() {
+  const [stats, setStats] = useState({ orders: 0, pending: 0, products: 0, revenue: 0 });
+
+  useEffect(() => {
+    (async () => {
+      const [orders, pending, products, revenueRes] = await Promise.all([
+        supabase.from("orders").select("*", { count: "exact", head: true }),
+        supabase.from("orders").select("*", { count: "exact", head: true }).eq("status", "pending"),
+        supabase.from("products").select("*", { count: "exact", head: true }),
+        supabase.from("orders").select("total"),
+      ]);
+      const revenue = (revenueRes.data ?? []).reduce((sum, o: { total: number }) => sum + Number(o.total || 0), 0);
+      setStats({
+        orders: orders.count ?? 0,
+        pending: pending.count ?? 0,
+        products: products.count ?? 0,
+        revenue,
+      });
+    })();
+  }, []);
+
+  const cards = [
+    { label: "Total Orders", value: stats.orders },
+    { label: "Pending Orders", value: stats.pending },
+    { label: "Products", value: stats.products },
+    { label: "Revenue", value: `Rs. ${stats.revenue.toLocaleString()}` },
+  ];
+
+  return (
+    <div className="p-8 lg:p-12">
+      <h1 className="font-display text-4xl font-semibold text-foreground">Dashboard</h1>
+      <p className="mt-2 text-muted-foreground">Overview of your store.</p>
+
+      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {cards.map((c) => (
+          <div key={c.label} className="rounded-xl border border-border bg-card p-6">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{c.label}</p>
+            <p className="mt-4 font-display text-4xl font-semibold text-foreground">{c.value}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
