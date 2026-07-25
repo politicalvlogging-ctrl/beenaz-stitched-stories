@@ -127,8 +127,10 @@ function Index() {
 
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {collections.map((collection) => (
-              <article
-                key={collection.title}
+              <Link
+                key={collection.slug}
+                to="/category/$slug"
+                params={{ slug: collection.slug }}
                 className="group overflow-hidden rounded-2xl bg-card shadow-sm transition-shadow hover:shadow-lg"
               >
                 <div className="aspect-[3/4] overflow-hidden">
@@ -148,12 +150,16 @@ function Index() {
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                     {collection.description}
                   </p>
+                  <p className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-lavender-deep">
+                    View collection <ArrowRight className="h-4 w-4" />
+                  </p>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </div>
       </section>
+
 
       {/* About */}
       <section id="about" className="section-padding bg-background">
