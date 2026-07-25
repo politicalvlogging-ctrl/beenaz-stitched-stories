@@ -27,23 +27,27 @@ export const Route = createFileRoute("/")({
 const collections = [
   {
     title: "Formal Wear",
+    slug: "formal-wear",
     description: "Refined stitched formals for every occasion — elegant silhouettes, delicate embroidery.",
     image: collectionFormal,
     alt: "Elegant lavender formal dress from Beenaz Fashion House",
   },
   {
     title: "Casual Luxe",
+    slug: "casual-luxe",
     description: "Soft premium lawn and cotton blends for everyday sophistication.",
     image: collectionCasual,
     alt: "Blush pink casual outfit from Beenaz Fashion House",
   },
   {
     title: "Party & Bridal",
+    slug: "party-bridal",
     description: "Statement pieces with hand-finished details for celebrations that matter.",
     image: collectionParty,
     alt: "Luxury party wear dress with gold embroidery",
   },
 ];
+
 
 function Index() {
   return (
