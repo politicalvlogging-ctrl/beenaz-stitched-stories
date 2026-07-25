@@ -1,9 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Phone, MapPin, Clock, ArrowRight, Mail } from "lucide-react";
 import heroBoutique from "../assets/hero-boutique.jpg";
 import collectionFormal from "../assets/collection-formal.jpg";
 import collectionCasual from "../assets/collection-casual.jpg";
 import collectionParty from "../assets/collection-party.jpg";
+
 
 export const Route = createFileRoute("/")({
   component: Index,
