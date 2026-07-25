@@ -157,7 +157,7 @@ function ProductDialog({
   const [form, setForm] = useState({
     name: initial?.name ?? "",
     description: initial?.description ?? "",
-    price: initial?.price ?? 0,
+    price: initial?.price != null ? String(initial.price) : "",
     image_url: initial?.image_url ?? "",
     category_id: initial?.category_id ?? "",
     in_stock: initial?.in_stock ?? true,
@@ -200,7 +200,7 @@ function ProductDialog({
     const payload = {
       name: form.name,
       description: form.description || null,
-      price: Number(form.price),
+      price: form.price === "" ? 0 : Number(form.price),
       image_url: form.image_url || null,
       category_id: form.category_id || null,
       in_stock: form.in_stock,
@@ -235,7 +235,7 @@ function ProductDialog({
           </Field>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Price (Rs.)">
-              <input required type="number" step="0.01" min={0} value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} className={inputCls} />
+              <input required type="text" inputMode="decimal" placeholder="e.g. 4500" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value.replace(/[^0-9.]/g, "") })} className={inputCls} />
             </Field>
             <Field label="Category">
               <select value={form.category_id} onChange={(e) => setForm({ ...form, category_id: e.target.value })} className={inputCls}>
