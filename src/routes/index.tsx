@@ -1,9 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Phone, MapPin, Clock, ArrowRight, Mail } from "lucide-react";
 import heroBoutique from "../assets/hero-boutique.jpg";
 import collectionFormal from "../assets/collection-formal.jpg";
 import collectionCasual from "../assets/collection-casual.jpg";
 import collectionParty from "../assets/collection-party.jpg";
+
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -26,23 +27,27 @@ export const Route = createFileRoute("/")({
 const collections = [
   {
     title: "Formal Wear",
+    slug: "formal-wear",
     description: "Refined stitched formals for every occasion — elegant silhouettes, delicate embroidery.",
     image: collectionFormal,
     alt: "Elegant lavender formal dress from Beenaz Fashion House",
   },
   {
     title: "Casual Luxe",
+    slug: "casual-luxe",
     description: "Soft premium lawn and cotton blends for everyday sophistication.",
     image: collectionCasual,
     alt: "Blush pink casual outfit from Beenaz Fashion House",
   },
   {
     title: "Party & Bridal",
+    slug: "party-bridal",
     description: "Statement pieces with hand-finished details for celebrations that matter.",
     image: collectionParty,
     alt: "Luxury party wear dress with gold embroidery",
   },
 ];
+
 
 function Index() {
   return (
@@ -122,8 +127,10 @@ function Index() {
 
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {collections.map((collection) => (
-              <article
-                key={collection.title}
+              <Link
+                key={collection.slug}
+                to="/category/$slug"
+                params={{ slug: collection.slug }}
                 className="group overflow-hidden rounded-2xl bg-card shadow-sm transition-shadow hover:shadow-lg"
               >
                 <div className="aspect-[3/4] overflow-hidden">
@@ -143,12 +150,16 @@ function Index() {
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                     {collection.description}
                   </p>
+                  <p className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-lavender-deep">
+                    View collection <ArrowRight className="h-4 w-4" />
+                  </p>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </div>
       </section>
+
 
       {/* About */}
       <section id="about" className="section-padding bg-background">
