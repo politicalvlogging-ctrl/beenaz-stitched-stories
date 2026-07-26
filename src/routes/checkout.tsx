@@ -37,7 +37,7 @@ function CheckoutPage() {
       customer_name: form.name.trim(),
       phone: form.phone.trim(),
       address: form.address.trim() || null,
-      product_id: i.id.length === 36 ? i.id : null,
+      product_id: i.id.split("|")[0],
       product_name: `${i.name} × ${i.qty}`,
       total: Number(i.price) * i.qty,
       status: "pending",

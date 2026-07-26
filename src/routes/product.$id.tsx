@@ -72,7 +72,7 @@ function ProductPage() {
     if (!product) return;
     add(
       {
-        id: product.id,
+        id: `${product.id}|${size}`,
         name: `${product.name} (Size ${size})`,
         price: Number(product.price),
         image_url: product.image_url,
