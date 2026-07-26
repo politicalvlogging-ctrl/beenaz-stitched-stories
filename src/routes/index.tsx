@@ -1,5 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Phone, MapPin, Clock, ArrowRight, Mail } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Phone, MapPin, Clock, ArrowRight, Mail, ShoppingBag } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useCart } from "@/lib/cart";
 import heroBoutique from "../assets/hero-boutique.jpg";
 import collectionFormal from "../assets/collection-formal.jpg";
 import collectionCasual from "../assets/collection-casual.jpg";
