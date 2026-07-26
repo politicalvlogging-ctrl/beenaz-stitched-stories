@@ -151,38 +151,45 @@ function Index() {
             </p>
           </div>
 
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {collections.map((collection) => (
-              <Link
-                key={collection.slug}
-                to="/category/$slug"
-                params={{ slug: collection.slug }}
-                className="group overflow-hidden rounded-2xl bg-card shadow-sm transition-shadow hover:shadow-lg"
-              >
-                <div className="aspect-[3/4] overflow-hidden">
-                  <img
-                    src={collection.image}
-                    alt={collection.alt}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    width={600}
-                    height={800}
-                    loading="lazy"
-                  />
-                </div>
-                <div className="p-6">
-                  <h3 className="font-display text-2xl font-semibold text-foreground">
-                    {collection.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {collection.description}
-                  </p>
-                  <p className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-lavender-deep">
-                    View collection <ArrowRight className="h-4 w-4" />
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
+          {loading ? (
+            <p className="mt-12 text-center text-muted-foreground">Loading collections…</p>
+          ) : categories.length === 0 ? (
+            <p className="mt-12 text-center text-muted-foreground">
+              Collections coming soon — call us at 0308 6844441.
+            </p>
+          ) : (
+            <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {categories.map((cat, index) => (
+                <Link
+                  key={cat.id}
+                  to="/category/$slug"
+                  params={{ slug: cat.slug }}
+                  className="group overflow-hidden rounded-2xl bg-card shadow-sm transition-shadow hover:shadow-lg"
+                >
+                  <div className="aspect-[3/4] overflow-hidden">
+                    <img
+                      src={imageFor(cat, index)}
+                      alt={`${cat.name} collection at Beenaz Fashion House`}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      width={600}
+                      height={800}
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="font-display text-2xl font-semibold text-foreground">{cat.name}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {DESCRIPTIONS[cat.slug] ??
+                        `${countFor(cat)} ${countFor(cat) === 1 ? "piece" : "pieces"} stitched with care.`}
+                    </p>
+                    <p className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-lavender-deep">
+                      View collection <ArrowRight className="h-4 w-4" />
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
