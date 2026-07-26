@@ -2,7 +2,6 @@ import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tan
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Toaster } from "@/components/ui/sonner";
 import { LayoutDashboard, Package, Tag, ShoppingCart, Settings, LogOut, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
@@ -73,7 +72,6 @@ function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Toaster richColors position="top-center" />
       <div className="flex min-h-screen">
         <AdminSidebar onSignOut={signOut} />
         <main className="flex-1 overflow-x-hidden">
