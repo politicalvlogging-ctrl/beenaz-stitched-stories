@@ -27,32 +27,55 @@ export const Route = createFileRoute("/")({
   }),
 });
 
-const collections = [
-  {
-    title: "Formal Wear",
-    slug: "formal-wear",
-    description: "Refined stitched formals for every occasion — elegant silhouettes, delicate embroidery.",
-    image: collectionFormal,
-    alt: "Elegant lavender formal dress from Beenaz Fashion House",
-  },
-  {
-    title: "Casual Luxe",
-    slug: "casual-luxe",
-    description: "Soft premium lawn and cotton blends for everyday sophistication.",
-    image: collectionCasual,
-    alt: "Blush pink casual outfit from Beenaz Fashion House",
-  },
-  {
-    title: "Party & Bridal",
-    slug: "party-bridal",
-    description: "Statement pieces with hand-finished details for celebrations that matter.",
-    image: collectionParty,
-    alt: "Luxury party wear dress with gold embroidery",
-  },
-];
+type Category = { id: string; name: string; slug: string };
+type Product = { id: string; name: string; price: number; image_url: string | null; in_stock: boolean; category_id: string | null };
 
+const FALLBACK_IMAGES: Record<string, string> = {
+  "formal-wear": collectionFormal,
+  "casual-luxe": collectionCasual,
+  "party-bridal": collectionParty,
+};
+const ROTATION = [collectionFormal, collectionCasual, collectionParty];
+
+const DESCRIPTIONS: Record<string, string> = {
+  "formal-wear": "Refined stitched formals for every occasion — elegant silhouettes, delicate embroidery.",
+  "casual-luxe": "Soft premium lawn and cotton blends for everyday sophistication.",
+  "party-bridal": "Statement pieces with hand-finished details for celebrations that matter.",
+};
 
 function Index() {
+  const { count } = useCart();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const [{ data: cats }, { data: prods }] = await Promise.all([
+        supabase.from("categories").select("id, name, slug").order("created_at", { ascending: true }),
+        supabase
+          .from("products")
+          .select("id, name, price, image_url, in_stock, category_id")
+          .order("created_at", { ascending: false }),
+      ]);
+      if (cancelled) return;
+      setCategories(cats ?? []);
+      setProducts(prods ?? []);
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const imageFor = (cat: Category, index: number) =>
+    products.find((p) => p.category_id === cat.id && p.image_url)?.image_url ??
+    FALLBACK_IMAGES[cat.slug] ??
+    ROTATION[index % ROTATION.length];
+
+  const countFor = (cat: Category) => products.filter((p) => p.category_id === cat.id).length;
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
