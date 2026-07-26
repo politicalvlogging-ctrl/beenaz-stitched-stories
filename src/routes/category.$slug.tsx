@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Phone, ShoppingBag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,6 +38,7 @@ type Product = {
 function CategoryPage() {
   const { slug } = Route.useParams();
   const { add } = useCart();
+  const navigate = useNavigate();
   const [category, setCategory] = useState<Category | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -163,14 +164,17 @@ function CategoryPage() {
                       >
                         <ShoppingBag className="h-4 w-4" /> Add to Cart
                       </button>
-                      <Link
-                        to="/checkout"
-                        onClick={() => p.in_stock && addToCart(p)}
+                      <button
+                        type="button"
                         disabled={!p.in_stock}
-                        className="btn-brand flex-1 justify-center text-sm"
+                        onClick={() => {
+                          addToCart(p);
+                          navigate({ to: "/checkout" });
+                        }}
+                        className="btn-brand flex-1 justify-center text-sm disabled:opacity-50"
                       >
                         Order Now
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 </article>

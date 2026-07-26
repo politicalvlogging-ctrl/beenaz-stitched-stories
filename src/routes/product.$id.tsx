@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Check, Phone, ShoppingBag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,6 +35,7 @@ const SIZES = ["S", "M", "L", "XL"];
 function ProductPage() {
   const { id } = Route.useParams();
   const { add } = useCart();
+  const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [categorySlug, setCategorySlug] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,13 +88,19 @@ function ProductPage() {
 
       <main className="pt-24 pb-20">
         <div className="container-tight">
-          <Link
-            to={categorySlug ? "/category/$slug" : "/"}
-            params={categorySlug ? { slug: categorySlug } : {}}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" /> Back
-          </Link>
+          {categorySlug ? (
+            <Link
+              to="/category/$slug"
+              params={{ slug: categorySlug }}
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" /> Back to collection
+            </Link>
+          ) : (
+            <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="h-4 w-4" /> Back to home
+            </Link>
+          )}
 
           {loading ? (
             <p className="mt-20 text-center text-muted-foreground">Loading product…</p>
@@ -187,14 +194,17 @@ function ProductPage() {
                   >
                     <ShoppingBag className="h-4 w-4" /> Add to Cart
                   </button>
-                  <Link
-                    to="/checkout"
-                    onClick={() => product.in_stock && addToCart()}
+                  <button
+                    type="button"
                     disabled={!product.in_stock}
-                    className="btn-brand"
+                    onClick={() => {
+                      addToCart();
+                      navigate({ to: "/checkout" });
+                    }}
+                    className="btn-brand disabled:opacity-50"
                   >
                     Order Now
-                  </Link>
+                  </button>
                   <a href="tel:03086844441" className="btn-outline">
                     <Phone className="h-4 w-4" /> Call to ask
                   </a>
