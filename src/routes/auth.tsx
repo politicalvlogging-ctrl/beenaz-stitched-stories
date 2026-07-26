@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Toaster } from "@/components/ui/sonner";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
@@ -53,7 +52,6 @@ function AuthPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Toaster richColors position="top-center" />
       <header className="border-b border-border/50">
         <div className="container-tight flex h-16 items-center justify-between">
           <a href="/" className="font-display text-2xl font-semibold text-foreground">Beenaz</a>

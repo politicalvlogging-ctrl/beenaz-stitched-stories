@@ -1,5 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Phone, MapPin, Clock, ArrowRight, Mail } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Phone, MapPin, Clock, ArrowRight, Mail, ShoppingBag } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useCart } from "@/lib/cart";
 import heroBoutique from "../assets/hero-boutique.jpg";
 import collectionFormal from "../assets/collection-formal.jpg";
 import collectionCasual from "../assets/collection-casual.jpg";
@@ -24,32 +27,55 @@ export const Route = createFileRoute("/")({
   }),
 });
 
-const collections = [
-  {
-    title: "Formal Wear",
-    slug: "formal-wear",
-    description: "Refined stitched formals for every occasion — elegant silhouettes, delicate embroidery.",
-    image: collectionFormal,
-    alt: "Elegant lavender formal dress from Beenaz Fashion House",
-  },
-  {
-    title: "Casual Luxe",
-    slug: "casual-luxe",
-    description: "Soft premium lawn and cotton blends for everyday sophistication.",
-    image: collectionCasual,
-    alt: "Blush pink casual outfit from Beenaz Fashion House",
-  },
-  {
-    title: "Party & Bridal",
-    slug: "party-bridal",
-    description: "Statement pieces with hand-finished details for celebrations that matter.",
-    image: collectionParty,
-    alt: "Luxury party wear dress with gold embroidery",
-  },
-];
+type Category = { id: string; name: string; slug: string };
+type Product = { id: string; name: string; price: number; image_url: string | null; in_stock: boolean; category_id: string | null };
 
+const FALLBACK_IMAGES: Record<string, string> = {
+  "formal-wear": collectionFormal,
+  "casual-luxe": collectionCasual,
+  "party-bridal": collectionParty,
+};
+const ROTATION = [collectionFormal, collectionCasual, collectionParty];
+
+const DESCRIPTIONS: Record<string, string> = {
+  "formal-wear": "Refined stitched formals for every occasion — elegant silhouettes, delicate embroidery.",
+  "casual-luxe": "Soft premium lawn and cotton blends for everyday sophistication.",
+  "party-bridal": "Statement pieces with hand-finished details for celebrations that matter.",
+};
 
 function Index() {
+  const { count } = useCart();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const [{ data: cats }, { data: prods }] = await Promise.all([
+        supabase.from("categories").select("id, name, slug").order("created_at", { ascending: true }),
+        supabase
+          .from("products")
+          .select("id, name, price, image_url, in_stock, category_id")
+          .order("created_at", { ascending: false }),
+      ]);
+      if (cancelled) return;
+      setCategories(cats ?? []);
+      setProducts(prods ?? []);
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const imageFor = (cat: Category, index: number) =>
+    products.find((p) => p.category_id === cat.id && p.image_url)?.image_url ??
+    FALLBACK_IMAGES[cat.slug] ??
+    ROTATION[index % ROTATION.length];
+
+  const countFor = (cat: Category) => products.filter((p) => p.category_id === cat.id).length;
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
@@ -65,10 +91,24 @@ function Index() {
             <a href="#visit" className="hover:text-foreground transition-colors">Visit Us</a>
             <a href="#contact" className="hover:text-foreground transition-colors">Contact</a>
           </nav>
-          <a href="tel:03086844441" className="btn-brand text-sm py-2 px-4">
-            <Phone className="h-4 w-4" />
-            <span className="hidden sm:inline">Call Now</span>
-          </a>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/checkout"
+              className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-blush/30"
+              aria-label="Cart"
+            >
+              <ShoppingBag className="h-5 w-5" />
+              {count > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[11px] font-semibold text-primary-foreground">
+                  {count}
+                </span>
+              )}
+            </Link>
+            <a href="tel:03086844441" className="btn-brand text-sm py-2 px-4">
+              <Phone className="h-4 w-4" />
+              <span className="hidden sm:inline">Call Now</span>
+            </a>
+          </div>
         </div>
       </header>
 
@@ -125,38 +165,45 @@ function Index() {
             </p>
           </div>
 
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {collections.map((collection) => (
-              <Link
-                key={collection.slug}
-                to="/category/$slug"
-                params={{ slug: collection.slug }}
-                className="group overflow-hidden rounded-2xl bg-card shadow-sm transition-shadow hover:shadow-lg"
-              >
-                <div className="aspect-[3/4] overflow-hidden">
-                  <img
-                    src={collection.image}
-                    alt={collection.alt}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    width={600}
-                    height={800}
-                    loading="lazy"
-                  />
-                </div>
-                <div className="p-6">
-                  <h3 className="font-display text-2xl font-semibold text-foreground">
-                    {collection.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {collection.description}
-                  </p>
-                  <p className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-lavender-deep">
-                    View collection <ArrowRight className="h-4 w-4" />
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
+          {loading ? (
+            <p className="mt-12 text-center text-muted-foreground">Loading collections…</p>
+          ) : categories.length === 0 ? (
+            <p className="mt-12 text-center text-muted-foreground">
+              Collections coming soon — call us at 0308 6844441.
+            </p>
+          ) : (
+            <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {categories.map((cat, index) => (
+                <Link
+                  key={cat.id}
+                  to="/category/$slug"
+                  params={{ slug: cat.slug }}
+                  className="group overflow-hidden rounded-2xl bg-card shadow-sm transition-shadow hover:shadow-lg"
+                >
+                  <div className="aspect-[3/4] overflow-hidden">
+                    <img
+                      src={imageFor(cat, index)}
+                      alt={`${cat.name} collection at Beenaz Fashion House`}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      width={600}
+                      height={800}
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="font-display text-2xl font-semibold text-foreground">{cat.name}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {DESCRIPTIONS[cat.slug] ??
+                        `${countFor(cat)} ${countFor(cat) === 1 ? "piece" : "pieces"} stitched with care.`}
+                    </p>
+                    <p className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-lavender-deep">
+                      View collection <ArrowRight className="h-4 w-4" />
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

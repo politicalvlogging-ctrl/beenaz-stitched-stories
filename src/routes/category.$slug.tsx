@@ -1,14 +1,17 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Phone } from "lucide-react";
+import { ArrowLeft, Phone, ShoppingBag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { SiteHeader } from "@/components/SiteHeader";
+import { useCart } from "@/lib/cart";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/category/$slug")({
   component: CategoryPage,
   head: ({ params }) => {
     const title = params.slug
       .split("-")
-      .map((s) => s[0].toUpperCase() + s.slice(1))
+      .map((s) => (s ? s[0].toUpperCase() + s.slice(1) : s))
       .join(" ");
     return {
       meta: [
@@ -34,6 +37,8 @@ type Product = {
 
 function CategoryPage() {
   const { slug } = Route.useParams();
+  const { add } = useCart();
+  const navigate = useNavigate();
   const [category, setCategory] = useState<Category | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,6 +48,7 @@ function CategoryPage() {
     let cancelled = false;
     (async () => {
       setLoading(true);
+      setMissing(false);
       const { data: cat } = await supabase
         .from("categories")
         .select("id, name, slug")
@@ -69,20 +75,14 @@ function CategoryPage() {
     };
   }, [slug]);
 
+  const addToCart = (p: Product) => {
+    add({ id: p.id, name: p.name, price: Number(p.price), image_url: p.image_url });
+    toast.success(`${p.name} added to cart`);
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
-        <div className="container-tight flex h-16 items-center justify-between">
-          <Link to="/" className="flex items-baseline gap-2">
-            <span className="font-display text-2xl font-semibold tracking-tight text-foreground">Beenaz</span>
-            <span className="hidden text-xs uppercase tracking-widest text-muted-foreground sm:inline">Fashion House</span>
-          </Link>
-          <a href="tel:03086844441" className="btn-brand text-sm py-2 px-4">
-            <Phone className="h-4 w-4" />
-            <span className="hidden sm:inline">Call Now</span>
-          </a>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="pt-24 pb-20">
         <div className="container-tight">
@@ -116,24 +116,30 @@ function CategoryPage() {
               {products.map((p) => (
                 <article
                   key={p.id}
-                  className="group overflow-hidden rounded-2xl bg-card shadow-sm transition-shadow hover:shadow-lg"
+                  className="group flex flex-col overflow-hidden rounded-2xl bg-card shadow-sm transition-shadow hover:shadow-lg"
                 >
-                  <div className="aspect-[3/4] overflow-hidden bg-blush/40">
-                    {p.image_url ? (
-                      <img
-                        src={p.image_url}
-                        alt={p.name}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-                        No image
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-6">
-                    <h3 className="font-display text-xl font-semibold text-foreground">{p.name}</h3>
+                  <Link to="/product/$id" params={{ id: p.id }} className="block">
+                    <div className="aspect-[3/4] overflow-hidden bg-blush/40">
+                      {p.image_url ? (
+                        <img
+                          src={p.image_url}
+                          alt={p.name}
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+                          No image
+                        </div>
+                      )}
+                    </div>
+                  </Link>
+                  <div className="flex flex-1 flex-col p-6">
+                    <Link to="/product/$id" params={{ id: p.id }}>
+                      <h2 className="font-display text-xl font-semibold text-foreground hover:text-lavender-deep">
+                        {p.name}
+                      </h2>
+                    </Link>
                     {p.description && (
                       <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
                         {p.description}
@@ -148,6 +154,27 @@ function CategoryPage() {
                           Out of stock
                         </span>
                       )}
+                    </div>
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        disabled={!p.in_stock}
+                        onClick={() => addToCart(p)}
+                        className="btn-outline flex-1 justify-center text-sm disabled:opacity-50"
+                      >
+                        <ShoppingBag className="h-4 w-4" /> Add to Cart
+                      </button>
+                      <button
+                        type="button"
+                        disabled={!p.in_stock}
+                        onClick={() => {
+                          addToCart(p);
+                          navigate({ to: "/checkout" });
+                        }}
+                        className="btn-brand flex-1 justify-center text-sm disabled:opacity-50"
+                      >
+                        Order Now
+                      </button>
                     </div>
                   </div>
                 </article>
