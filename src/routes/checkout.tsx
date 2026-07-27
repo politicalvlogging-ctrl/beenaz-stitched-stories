@@ -30,15 +30,22 @@ function CheckoutPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return toast.error("Your cart is empty");
-    if (!form.name.trim() || !form.phone.trim()) return toast.error("Name and phone are required");
+    const name = form.name.trim();
+    const phone = form.phone.trim();
+    if (name.length < 2 || name.length > 100) return toast.error("Please enter your full name (2-100 characters)");
+    if (!/^[0-9+()\-\s]{7,20}$/.test(phone)) return toast.error("Please enter a valid phone number");
+    if (form.address.trim().length > 500) return toast.error("Address is too long (max 500 characters)");
+    if (form.notes.trim().length > 1000) return toast.error("Notes are too long (max 1000 characters)");
+
+
 
     setSubmitting(true);
     const rows = items.map((i) => ({
-      customer_name: form.name.trim(),
-      phone: form.phone.trim(),
+      customer_name: name,
+      phone,
       address: form.address.trim() || null,
       product_id: i.id.split("|")[0],
-      product_name: `${i.name} × ${i.qty}`,
+      product_name: `${i.name} × ${i.qty}`.slice(0, 200),
       total: Number(i.price) * i.qty,
       status: "pending",
       notes: form.notes.trim() || null,
