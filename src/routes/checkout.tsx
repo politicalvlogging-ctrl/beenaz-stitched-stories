@@ -41,11 +41,11 @@ function CheckoutPage() {
 
     setSubmitting(true);
     const rows = items.map((i) => ({
-      customer_name: form.name.trim(),
-      phone: form.phone.trim(),
+      customer_name: name,
+      phone,
       address: form.address.trim() || null,
       product_id: i.id.split("|")[0],
-      product_name: `${i.name} × ${i.qty}`,
+      product_name: `${i.name} × ${i.qty}`.slice(0, 200),
       total: Number(i.price) * i.qty,
       status: "pending",
       notes: form.notes.trim() || null,
