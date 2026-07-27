@@ -27,7 +27,7 @@ export const Route = createFileRoute("/")({
   }),
 });
 
-type Category = { id: string; name: string; slug: string };
+type Category = { id: string; name: string; slug: string; image_url: string | null };
 type Product = { id: string; name: string; price: number; image_url: string | null; in_stock: boolean; category_id: string | null };
 
 const FALLBACK_IMAGES: Record<string, string> = {
