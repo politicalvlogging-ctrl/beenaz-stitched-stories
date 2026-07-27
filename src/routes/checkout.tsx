@@ -55,10 +55,29 @@ function CheckoutPage() {
     setSubmitting(false);
     if (error) return toast.error(error.message);
 
+    // Send the same order to the shop's WhatsApp
+    const lines = [
+      "*New Order — Beenaz Fashion House*",
+      "",
+      ...items.map((i) => `• ${i.name} × ${i.qty} — Rs. ${(Number(i.price) * i.qty).toLocaleString()}`),
+      "",
+      `*Total:* Rs. ${total.toLocaleString()}`,
+      "",
+      `*Name:* ${name}`,
+      `*Phone:* ${phone}`,
+      form.address.trim() ? `*Address:* ${form.address.trim()}` : "",
+      form.notes.trim() ? `*Notes:* ${form.notes.trim()}` : "",
+      "",
+      "Payment: Cash on delivery",
+    ].filter(Boolean);
+    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`;
+    window.open(waUrl, "_blank", "noopener,noreferrer");
+
     clear();
     setDone(true);
-    toast.success("Order placed! We will call you shortly.");
+    toast.success("Order placed! Details WhatsApp par bhej diye gaye.");
   };
+
 
   return (
     <div className="min-h-screen bg-background">
