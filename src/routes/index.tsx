@@ -53,7 +53,7 @@ function Index() {
     let cancelled = false;
     (async () => {
       const [{ data: cats }, { data: prods }] = await Promise.all([
-        supabase.from("categories").select("id, name, slug").order("created_at", { ascending: true }),
+        supabase.from("categories").select("id, name, slug, image_url").order("created_at", { ascending: true }),
         supabase
           .from("products")
           .select("id, name, price, image_url, in_stock, category_id")
