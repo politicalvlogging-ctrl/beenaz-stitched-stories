@@ -70,6 +70,7 @@ function Index() {
   }, []);
 
   const imageFor = (cat: Category, index: number) =>
+    cat.image_url ??
     products.find((p) => p.category_id === cat.id && p.image_url)?.image_url ??
     FALLBACK_IMAGES[cat.slug] ??
     ROTATION[index % ROTATION.length];
