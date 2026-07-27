@@ -6,6 +6,9 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { useCart } from "@/lib/cart";
 import { toast } from "sonner";
 
+const WHATSAPP_NUMBER = "923086844441";
+
+
 export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,
   head: () => ({
