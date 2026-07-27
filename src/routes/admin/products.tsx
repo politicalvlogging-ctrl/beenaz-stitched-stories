@@ -184,8 +184,11 @@ function ProductDialog({
         .from("product-images")
         .upload(path, file, { upsert: false, contentType: file.type || undefined });
       if (upErr) throw upErr;
-      const { data } = supabase.storage.from("product-images").getPublicUrl(path);
-      setForm((f) => ({ ...f, image_url: data.publicUrl }));
+      const { data: signed, error: signErr } = await supabase.storage
+        .from("product-images")
+        .createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
+      if (signErr) throw signErr;
+      setForm((f) => ({ ...f, image_url: signed.signedUrl }));
       toast.success("Image uploaded");
     } catch (err: any) {
       toast.error(err.message || "Upload failed");
