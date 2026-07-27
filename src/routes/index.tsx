@@ -27,7 +27,7 @@ export const Route = createFileRoute("/")({
   }),
 });
 
-type Category = { id: string; name: string; slug: string };
+type Category = { id: string; name: string; slug: string; image_url: string | null };
 type Product = { id: string; name: string; price: number; image_url: string | null; in_stock: boolean; category_id: string | null };
 
 const FALLBACK_IMAGES: Record<string, string> = {
@@ -53,7 +53,7 @@ function Index() {
     let cancelled = false;
     (async () => {
       const [{ data: cats }, { data: prods }] = await Promise.all([
-        supabase.from("categories").select("id, name, slug").order("created_at", { ascending: true }),
+        supabase.from("categories").select("id, name, slug, image_url").order("created_at", { ascending: true }),
         supabase
           .from("products")
           .select("id, name, price, image_url, in_stock, category_id")
@@ -70,6 +70,7 @@ function Index() {
   }, []);
 
   const imageFor = (cat: Category, index: number) =>
+    cat.image_url ??
     products.find((p) => p.category_id === cat.id && p.image_url)?.image_url ??
     FALLBACK_IMAGES[cat.slug] ??
     ROTATION[index % ROTATION.length];
