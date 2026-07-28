@@ -47,24 +47,77 @@ function ProductsPage() {
   };
 
   return (
-    <div className="p-8 lg:p-12">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="font-display text-4xl font-semibold text-foreground">Products</h1>
-          <p className="mt-2 text-muted-foreground">Manage your product catalog.</p>
+    <div className="p-4 sm:p-8 lg:p-12">
+      <div className="grid grid-cols-1 gap-4 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="font-display text-3xl font-semibold text-foreground sm:text-4xl">Products</h1>
+          <p className="mt-2 text-sm text-muted-foreground sm:text-base">Manage your product catalog.</p>
         </div>
         <button
           onClick={() => {
             setEditing(null);
             setOpen(true);
           }}
-          className="btn-brand"
+          className="btn-brand w-full justify-center sm:w-auto"
         >
           <Plus className="h-4 w-4" /> Add product
         </button>
       </div>
 
-      <div className="mt-8 overflow-hidden rounded-xl border border-border bg-card">
+      {/* Mobile cards */}
+      <div className="mt-6 space-y-3 md:hidden">
+        {products.length === 0 && (
+          <div className="rounded-xl border border-border bg-card px-4 py-12 text-center text-sm text-muted-foreground">
+            No products yet. Tap "Add product" to get started.
+          </div>
+        )}
+        {products.map((p) => (
+          <div key={p.id} className="rounded-xl border border-border bg-card p-4">
+            <div className="flex gap-3">
+              {p.image_url ? (
+                <img src={p.image_url} alt={p.name} className="h-16 w-16 shrink-0 rounded-md object-cover" />
+              ) : (
+                <div className="h-16 w-16 shrink-0 rounded-md bg-muted" />
+              )}
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-medium text-foreground">{p.name}</p>
+                <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                  {categories.find((c) => c.id === p.category_id)?.name ?? "—"}
+                </p>
+                <p className="mt-1 text-sm text-foreground">Rs. {Number(p.price).toLocaleString()}</p>
+                <span
+                  className={`mt-2 inline-flex rounded-full px-2 py-0.5 text-[11px] ${
+                    p.in_stock ? "bg-lavender/20 text-lavender-deep" : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  {p.in_stock ? "In stock" : "Out"}
+                </span>
+              </div>
+            </div>
+            <div className="mt-3 flex gap-2">
+              <button
+                onClick={() => {
+                  setEditing(p);
+                  setOpen(true);
+                }}
+                className="flex flex-1 items-center justify-center gap-2 rounded-md border border-border px-3 py-2 text-sm text-foreground"
+              >
+                <Pencil className="h-4 w-4" /> Edit
+              </button>
+              <button
+                onClick={() => remove(p.id)}
+                className="flex items-center justify-center gap-2 rounded-md border border-border px-3 py-2 text-sm text-muted-foreground"
+                aria-label="Delete product"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop table */}
+      <div className="mt-8 hidden overflow-x-auto rounded-xl border border-border bg-card md:block">
         <table className="w-full text-sm">
           <thead className="bg-muted/50 text-left text-xs uppercase tracking-widest text-muted-foreground">
             <tr>
@@ -219,13 +272,13 @@ function ProductDialog({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4">
-      <div className="w-full max-w-lg rounded-2xl bg-card p-6 shadow-xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between">
-          <h2 className="font-display text-2xl font-semibold text-foreground">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/40 p-0 sm:items-center sm:p-4">
+      <div className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-card p-5 shadow-xl sm:max-h-[90vh] sm:rounded-2xl sm:p-6">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="min-w-0 truncate font-display text-xl font-semibold text-foreground sm:text-2xl">
             {initial ? "Edit product" : "Add product"}
           </h2>
-          <button onClick={onClose} className="rounded-md p-2 text-muted-foreground hover:bg-muted">
+          <button onClick={onClose} className="shrink-0 rounded-md p-2 text-muted-foreground hover:bg-muted">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -236,7 +289,7 @@ function ProductDialog({
           <Field label="Description">
             <textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={inputCls} />
           </Field>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Price (Rs.)">
               <input required type="text" inputMode="decimal" placeholder="e.g. 4500" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value.replace(/[^0-9.]/g, "") })} className={inputCls} />
             </Field>
@@ -299,9 +352,9 @@ function ProductDialog({
             <input type="checkbox" checked={form.in_stock} onChange={(e) => setForm({ ...form, in_stock: e.target.checked })} />
             In stock
           </label>
-          <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={onClose} className="btn-outline">Cancel</button>
-            <button type="submit" disabled={saving} className="btn-brand">{saving ? "Saving…" : "Save"}</button>
+          <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+            <button type="button" onClick={onClose} className="btn-outline w-full justify-center sm:w-auto">Cancel</button>
+            <button type="submit" disabled={saving} className="btn-brand w-full justify-center sm:w-auto">{saving ? "Saving…" : "Save"}</button>
           </div>
         </form>
       </div>
