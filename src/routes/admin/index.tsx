@@ -35,11 +35,12 @@ function DashboardPage() {
   ];
 
   return (
-    <div className="p-8 lg:p-12">
-      <h1 className="font-display text-4xl font-semibold text-foreground">Dashboard</h1>
-      <p className="mt-2 text-muted-foreground">Overview of your store.</p>
+    <div className="p-4 sm:p-8 lg:p-12">
+      <h1 className="font-display text-3xl font-semibold text-foreground sm:text-4xl">Dashboard</h1>
+      <p className="mt-2 text-sm text-muted-foreground sm:text-base">Overview of your store.</p>
 
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-4 lg:grid-cols-4">
+
         {cards.map((c) => (
           <div key={c.label} className="rounded-xl border border-border bg-card p-6">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{c.label}</p>
