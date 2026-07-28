@@ -42,10 +42,11 @@ function DashboardPage() {
       <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-4 lg:grid-cols-4">
 
         {cards.map((c) => (
-          <div key={c.label} className="rounded-xl border border-border bg-card p-6">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{c.label}</p>
-            <p className="mt-4 font-display text-4xl font-semibold text-foreground">{c.value}</p>
+          <div key={c.label} className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground sm:text-xs">{c.label}</p>
+            <p className="mt-3 break-words font-display text-2xl font-semibold text-foreground sm:mt-4 sm:text-4xl">{c.value}</p>
           </div>
+
         ))}
       </div>
     </div>
