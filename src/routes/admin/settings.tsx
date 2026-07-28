@@ -14,11 +14,12 @@ function SettingsPage() {
   }, []);
 
   return (
-    <div className="p-8 lg:p-12">
-      <h1 className="font-display text-4xl font-semibold text-foreground">Settings</h1>
-      <p className="mt-2 text-muted-foreground">Store information.</p>
+    <div className="p-4 sm:p-8 lg:p-12">
+      <h1 className="font-display text-3xl font-semibold text-foreground sm:text-4xl">Settings</h1>
+      <p className="mt-2 text-sm text-muted-foreground sm:text-base">Store information.</p>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+      <div className="mt-6 grid gap-4 sm:mt-8 sm:gap-6 lg:grid-cols-2">
+
         <div className="rounded-xl border border-border bg-card p-6">
           <h2 className="font-display text-xl font-semibold text-foreground">Account</h2>
           <p className="mt-3 text-sm text-muted-foreground">Signed in as</p>
