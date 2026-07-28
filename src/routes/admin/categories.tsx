@@ -114,24 +114,29 @@ function CategoriesPage() {
     load();
   };
 
-  return (
-    <div className="p-8 lg:p-12">
-      <h1 className="font-display text-4xl font-semibold text-foreground">Categories</h1>
-      <p className="mt-2 text-muted-foreground">Organize your products and set a cover photo.</p>
+  const pickRowFile = (id: string) => {
+    rowTarget.current = id;
+    rowFileRef.current?.click();
+  };
 
-      <form onSubmit={add} className="mt-8 rounded-xl border border-border bg-card p-5">
+  return (
+    <div className="p-4 sm:p-8 lg:p-12">
+      <h1 className="font-display text-3xl font-semibold text-foreground sm:text-4xl">Categories</h1>
+      <p className="mt-2 text-sm text-muted-foreground sm:text-base">Organize your products and set a cover photo.</p>
+
+      <form onSubmit={add} className="mt-6 rounded-xl border border-border bg-card p-4 sm:mt-8 sm:p-5">
         <div className="flex flex-col gap-3 sm:flex-row">
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="New category name"
-            className="flex-1 rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:border-lavender focus:outline-none focus:ring-2 focus:ring-lavender/30"
+            className="min-w-0 flex-1 rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:border-lavender focus:outline-none focus:ring-2 focus:ring-lavender/30"
           />
           <input
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
             placeholder="Image URL (optional)"
-            className="flex-1 rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:border-lavender focus:outline-none focus:ring-2 focus:ring-lavender/30"
+            className="min-w-0 flex-1 rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:border-lavender focus:outline-none focus:ring-2 focus:ring-lavender/30"
           />
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -146,7 +151,7 @@ function CategoriesPage() {
             type="button"
             onClick={() => fileRef.current?.click()}
             disabled={uploading}
-            className="btn-outline text-sm py-2 px-4"
+            className="btn-outline px-4 py-2 text-sm"
           >
             {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
             {uploading ? "Uploading…" : "Upload image"}
@@ -164,7 +169,7 @@ function CategoriesPage() {
               </button>
             </span>
           )}
-          <button disabled={saving} className="btn-brand ml-auto">
+          <button disabled={saving} className="btn-brand w-full justify-center sm:ml-auto sm:w-auto">
             <Plus className="h-4 w-4" /> Add
           </button>
         </div>
@@ -172,7 +177,58 @@ function CategoriesPage() {
 
       <input ref={rowFileRef} type="file" accept="image/*,.jfif" className="hidden" onChange={onRowFile} />
 
-      <div className="mt-8 overflow-hidden rounded-xl border border-border bg-card">
+      {/* Mobile cards */}
+      <div className="mt-6 space-y-3 md:hidden">
+        {cats.length === 0 && (
+          <div className="rounded-xl border border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground">
+            No categories yet.
+          </div>
+        )}
+        {cats.map((c) => (
+          <div key={c.id} className="rounded-xl border border-border bg-card p-4">
+            <div className="flex gap-3">
+              {c.image_url ? (
+                <img src={c.image_url} alt={c.name} className="h-16 w-16 shrink-0 rounded-md object-cover" />
+              ) : (
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                  <ImagePlus className="h-4 w-4" />
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-medium text-foreground">{c.name}</p>
+                <p className="truncate text-xs text-muted-foreground">{c.slug}</p>
+              </div>
+              <button
+                onClick={() => remove(c.id)}
+                className="shrink-0 self-start rounded-md p-2 text-muted-foreground"
+                aria-label="Delete category"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="mt-3 flex gap-2">
+              <button
+                onClick={() => pickRowFile(c.id)}
+                disabled={rowUploading === c.id}
+                className="flex-1 rounded-md border border-border px-3 py-2 text-xs text-foreground"
+              >
+                {rowUploading === c.id ? "Uploading…" : c.image_url ? "Change photo" : "Add photo"}
+              </button>
+              {c.image_url && (
+                <button
+                  onClick={() => clearRowImage(c.id)}
+                  className="flex-1 rounded-md border border-border px-3 py-2 text-xs text-muted-foreground"
+                >
+                  Remove photo
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop table */}
+      <div className="mt-8 hidden overflow-x-auto rounded-xl border border-border bg-card md:block">
         <table className="w-full text-sm">
           <thead className="bg-muted/50 text-left text-xs uppercase tracking-widest text-muted-foreground">
             <tr>
@@ -206,10 +262,7 @@ function CategoriesPage() {
                 <td className="px-6 py-3">
                   <div className="flex items-center justify-end gap-2">
                     <button
-                      onClick={() => {
-                        rowTarget.current = c.id;
-                        rowFileRef.current?.click();
-                      }}
+                      onClick={() => pickRowFile(c.id)}
                       disabled={rowUploading === c.id}
                       className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground hover:bg-blush/30"
                     >
