@@ -49,11 +49,57 @@ function OrdersPage() {
   };
 
   return (
-    <div className="p-8 lg:p-12">
-      <h1 className="font-display text-4xl font-semibold text-foreground">Orders</h1>
-      <p className="mt-2 text-muted-foreground">Track and update customer orders.</p>
+    <div className="p-4 sm:p-8 lg:p-12">
+      <h1 className="font-display text-3xl font-semibold text-foreground sm:text-4xl">Orders</h1>
+      <p className="mt-2 text-sm text-muted-foreground sm:text-base">Track and update customer orders.</p>
 
-      <div className="mt-8 overflow-hidden rounded-xl border border-border bg-card">
+      {/* Mobile cards */}
+      <div className="mt-6 space-y-3 md:hidden">
+        {orders.length === 0 && (
+          <div className="rounded-xl border border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground">
+            No orders yet.
+          </div>
+        )}
+        {orders.map((o) => (
+          <div key={o.id} className="rounded-xl border border-border bg-card p-4">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+              <div className="min-w-0">
+                <p className="truncate font-medium text-foreground">{o.customer_name}</p>
+                <a href={`tel:${o.phone}`} className="text-sm text-lavender-deep underline">{o.phone}</a>
+                {o.address && <p className="mt-1 text-xs text-muted-foreground">{o.address}</p>}
+              </div>
+              <button
+                onClick={() => remove(o.id)}
+                className="shrink-0 rounded-md p-2 text-muted-foreground"
+                aria-label="Delete order"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="mt-3 space-y-1 text-sm">
+              <p className="text-muted-foreground">
+                Product: <span className="text-foreground">{o.product_name ?? "—"}</span>
+              </p>
+              <p className="text-muted-foreground">
+                Total: <span className="text-foreground">Rs. {Number(o.total).toLocaleString()}</span>
+              </p>
+              <p className="text-xs text-muted-foreground">{new Date(o.created_at).toLocaleString()}</p>
+            </div>
+            <select
+              value={o.status}
+              onChange={(e) => setStatus(o.id, e.target.value)}
+              className="mt-3 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              {STATUSES.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop table */}
+      <div className="mt-8 hidden overflow-x-auto rounded-xl border border-border bg-card md:block">
         <table className="w-full text-sm">
           <thead className="bg-muted/50 text-left text-xs uppercase tracking-widest text-muted-foreground">
             <tr>
